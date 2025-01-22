@@ -1,3 +1,4 @@
+import 'package:app/ThemeData.dart';
 import 'package:flutter/material.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -9,13 +10,12 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       toolbarHeight: MediaQuery.of(context).size.height * 0.10,
-      backgroundColor: Colors.white,
+      backgroundColor: darkMode.appBarBackgroundColor,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Icon(
             Icons.person,
-            color: Color(0xffF67301),
             size: 50,
           ),
           Image(
@@ -24,9 +24,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           Icon(
             Icons.logout,
-            color: Color(0xffF67301),
             size: 50,
-            weight: 1,
           ),
         ],
       ),
