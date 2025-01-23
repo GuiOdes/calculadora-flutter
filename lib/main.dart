@@ -3,8 +3,6 @@ import 'package:app/ThemeData.dart';
 import 'package:app/pages/HomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
-
-<<<<<<< HEAD
 import 'components/MyAppBar.dart';
 
 void main() async {
@@ -19,9 +17,7 @@ void main() async {
     autoSendSessionId: true,
     debug: true,
   );
-=======
-void main() {
->>>>>>> 36ac597e99596a312ede6a88afbbd62d901e458e
+
   runApp(const MyApp());
 }
 
