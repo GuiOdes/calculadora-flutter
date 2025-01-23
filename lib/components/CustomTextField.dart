@@ -3,12 +3,17 @@ import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
   final String label;
-  final IconData? icon;
+  final IconData? suffixIcon;
+  final IconData? prefixIcon;
+  final TextEditingController controller;
+  
 
   const CustomTextField({
     super.key,
     required this.label,
-    this.icon,
+    required this.controller,
+    this.suffixIcon,
+    this.prefixIcon,
   });
 
   @override
@@ -27,6 +32,7 @@ class CustomTextField extends StatelessWidget {
           borderSide: BorderSide(
             color: darkMode.btnTextColor,
           ),
+          borderRadius: BorderRadius.circular(10.0),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
@@ -34,10 +40,14 @@ class CustomTextField extends StatelessWidget {
           ),
         ),
         // icon if exists in suffix
-        suffixIcon: Icon(
-            icon,
+        suffixIcon: suffixIcon != null ? Icon(
+          suffixIcon,
           color: darkMode.btnTextColor,
-        ),
+        ) : null,
+        prefixIcon: prefixIcon != null ? Icon(
+          prefixIcon,
+          color: darkMode.btnTextColor,
+        ) : null,
       ),
     );
   }

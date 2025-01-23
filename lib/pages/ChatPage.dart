@@ -17,43 +17,50 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(),
+      drawer: Drawer(
+        backgroundColor: Colors.white,
+      ),
       backgroundColor: darkMode.backgroundColor,
-      body: Center(
-          child: Column(
-            children: [
-              // list view of messages
-              Expanded(
-                child: ListView(
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Center(
+            child: Column(
+              children: [
+                // list view of messages
+                Expanded(
+                  child: ListView(
+                    children: [
+                      ChatBubbleListTile(message: "Olá", isSentByMe: true, time: "10:19",),
+                      ChatBubbleListTile(message: "Eae", isSentByMe: false, userName: "Pedrinho", time: "10,19",),
+                      ChatBubbleListTile(message: "Tudo bem?", isSentByMe: true, time: "10:19",),
+                      ChatBubbleListTile(message: "Tudo sim e você?", isSentByMe: false, userName: "Pedrinho", time: "10:19",),
+                      ChatBubbleListTile(message: "Tudo bem também", isSentByMe: true, time: "10:19",),
+                      ChatBubbleListTile(message: "Que bom", isSentByMe: false, userName: "Pedrinho", time: "10:19",),
+                      ChatBubbleListTile(message: "Vamos sair hoje?", isSentByMe: true, time: "10:19",),
+                      ChatBubbleListTile(message: "Vamos sim", isSentByMe: false, userName: "Pedrinho", time: "10:19",),
+                      ChatBubbleListTile(message: "Que horas?", isSentByMe: true, time: "10:19",),
+                      ChatBubbleListTile(message: "Às 20h", isSentByMe: false, userName: "Pedrinho", time: "10:19",),
+                      ChatBubbleListTile(message: "Ok", isSentByMe: true, time: "10:19",),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Row(
                   children: [
-                    ChatBubbleListTile(message: "Olá", isSentByMe: true, time: "10:19",),
-                    ChatBubbleListTile(message: "Eae", isSentByMe: false, userName: "Pedrinho", time: "10,19",),
-                    ChatBubbleListTile(message: "Tudo bem?", isSentByMe: true, time: "10:19",),
-                    ChatBubbleListTile(message: "Tudo sim e você?", isSentByMe: false, userName: "Pedrinho", time: "10:19",),
-                    ChatBubbleListTile(message: "Tudo bem também", isSentByMe: true, time: "10:19",),
-                    ChatBubbleListTile(message: "Que bom", isSentByMe: false, userName: "Pedrinho", time: "10:19",),
-                    ChatBubbleListTile(message: "Vamos sair hoje?", isSentByMe: true, time: "10:19",),
-                    ChatBubbleListTile(message: "Vamos sim", isSentByMe: false, userName: "Pedrinho", time: "10:19",),
-                    ChatBubbleListTile(message: "Que horas?", isSentByMe: true, time: "10:19",),
-                    ChatBubbleListTile(message: "Às 20h", isSentByMe: false, userName: "Pedrinho", time: "10:19",),
-                    ChatBubbleListTile(message: "Ok", isSentByMe: true, time: "10:19",),
+                    Expanded(
+                        child: CustomTextField(
+                          label: 'Digite sua mensagem...',
+                          suffixIcon: Icons.send,
+                          controller: TextEditingController()
+                        )
+                    ),
                   ],
                 ),
-              ),
-              SizedBox(
-                height: 5,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                      child: CustomTextField(
-                        label: 'Digite sua mensagem...',
-                        icon: Icons.send,
-                      )
-                  ),
-                ],
-              ),
-            ],
-          )
+              ],
+            )
+        ),
       ),
     );
   }

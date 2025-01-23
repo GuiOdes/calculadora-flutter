@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 final darkMode = CustomThemeData(
-  backgroundColor: Colors.black,
+  backgroundColor: Color(0xFF121212),
   primaryTextColor: Colors.white,
-  secondaryTextColor: Colors.grey,
-  btnBackgroundColor: Colors.blue,
+  secondaryTextColor: Color.fromRGBO(255, 255, 255, 0.7),
+  btnBackgroundColor: Color.fromRGBO(255, 255, 255, 0.16),
   btnTextColor: Colors.white,
-  appBarBackgroundColor: Colors.black,
+  appBarBackgroundColor: Color(0xFF121212),
   appBarTextColor: Colors.white,
-  chatBubbleColor: Colors.grey[800]!,
+  chatBubbleColor: Color(0xFF0a3d56),
   chatBubbleTextColor: Colors.white,
-  chatBubbleMeColor: Colors.blue,
+  chatBubbleMeColor: Color(0xFF300764),
   chatBubbleMeTextColor: Colors.white,
 );
 
@@ -27,7 +27,6 @@ class CustomThemeData {
   final Color chatBubbleMeColor;
   final Color chatBubbleMeTextColor;
 
-  // constructor
   CustomThemeData({
     required this.backgroundColor,
     required this.primaryTextColor,

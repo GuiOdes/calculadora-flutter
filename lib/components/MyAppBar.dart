@@ -1,5 +1,6 @@
-import 'package:app/ThemeData.dart';
 import 'package:flutter/material.dart';
+
+import '../ThemeData.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   const MyAppBar({
@@ -9,24 +10,39 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      centerTitle: true,
       toolbarHeight: MediaQuery.of(context).size.height * 0.10,
-      backgroundColor: darkMode.appBarBackgroundColor,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Icon(
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 20),
+        child: IconButton(
+          icon: Icon(
             Icons.person,
+            color: darkMode.btnTextColor,
             size: 50,
           ),
-          Image(
-            image: AssetImage('lib/images/logo.png'),
-            height: MediaQuery.of(context).size.height * 0.2,
+          onPressed: () => Scaffold.of(context).openDrawer(),
+        ),
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 20),
+          child: IconButton(
+            icon: Icon(
+              Icons.logout,
+              color: darkMode.btnTextColor,
+              size: 50,
+            ),
+            onPressed: () {
+              Navigator.pushNamed(context, '/');
+            },
           ),
-          Icon(
-            Icons.logout,
-            size: 50,
-          ),
-        ],
+        ),
+      ],
+      backgroundColor: darkMode.appBarBackgroundColor,
+      automaticallyImplyLeading: false,
+      title: Image(
+        image: AssetImage('lib/images/logo.png'),
+        height: MediaQuery.of(context).size.height * 0.1,
       ),
     );
   }

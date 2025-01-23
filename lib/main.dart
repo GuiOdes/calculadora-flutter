@@ -1,6 +1,6 @@
 import 'package:app/pages/ChatPage.dart';
-import 'package:app/RyanThemeData.dart';
-import 'package:app/pages/RyanHomePage.dart';
+import 'package:app/ThemeData.dart';
+import 'package:app/pages/HomePage.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -13,8 +13,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      routes: {
+        '/home': (context) => const HomePage(),
+        '/chat': (context) => const ChatPage(),
+      },
       debugShowCheckedModeBanner: false,
-      home: const ChatPage(),
+      home: const HomePage(),
     );
   }
 }
