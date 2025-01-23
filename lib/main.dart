@@ -1,8 +1,5 @@
-import 'package:app/ThemeData.dart';
 import 'package:app/pages/ChatPage.dart';
 import 'package:flutter/material.dart';
-
-import 'components/MyAppBar.dart';
 
 void main() {
   runApp(const MyApp());
