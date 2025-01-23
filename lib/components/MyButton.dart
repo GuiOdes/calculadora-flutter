@@ -13,10 +13,10 @@ class MyButton extends StatelessWidget {
       onPressed: onPressed,
       color: Colors.white24,
       textColor: Colors.white,
-      child: Text(text, style: TextStyle(fontSize: 16),),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(30.0)
       ),
+      child: Text(text, style: TextStyle(fontSize: 16),),
     );
   }
 }

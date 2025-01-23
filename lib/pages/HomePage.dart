@@ -1,8 +1,7 @@
+import 'package:app/ThemeData.dart';
+import 'package:app/components/CustomTextField.dart';
 import 'package:app/components/MyButton.dart';
-import 'package:app/components/MyTextField.dart';
 import 'package:flutter/material.dart';
-
-import '../components/MyAppBar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,6 +16,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: darkMode.backgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(25.0),
         child: Center(
@@ -36,12 +36,10 @@ class _HomePageState extends State<HomePage> {
                   height: MediaQuery.of(context).size.height * 0.1,
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height * 0.1),
-                MyTextField(
-                  hintText: "Nome de Usuário",
-                  obscureText: false,
+                CustomTextField(
+                  label: "Nome de Usuário",
                   controller: userController,
-                  //validator: validator,
-                  keyboardType: TextInputType.name,
+                  prefixIcon: Icons.person,
                 ),
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.02,
@@ -54,8 +52,9 @@ class _HomePageState extends State<HomePage> {
                         Radius.circular(10.0)
                     ),
                   ),
-                  child: MyButton(text: "Entrar", onPressed: () {}),
-
+                  child: MyButton(text: "Entrar", onPressed: () {
+                    Navigator.pushNamed(context, '/chat');
+                  }),
                 ),
               ],
             ),
