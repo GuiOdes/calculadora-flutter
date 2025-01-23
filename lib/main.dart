@@ -1,5 +1,5 @@
-import 'package:app/ThemeData.dart';
-import 'package:app/pages/HomePage.dart';
+import 'package:app/RyanThemeData.dart';
+import 'package:app/pages/RyanHomePage.dart';
 import 'package:flutter/material.dart';
 
 import 'components/MyAppBar.dart';
