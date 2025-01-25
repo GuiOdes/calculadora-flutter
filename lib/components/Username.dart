@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'Message.dart';
 
-class AuthUsername {
+class Username{
   //addUsername method to add username to the list
   Map<String, DateTime> addUsername(Map<String, DateTime> list, String username) {
     if (list.containsKey(username)) {
@@ -34,7 +34,7 @@ class AuthUsername {
 
 void main () async {
   print("Hello, World!");
-  AuthUsername authUsername = AuthUsername();
+  Username authUsername = Username();
   Map<String, DateTime> usernames = {};
   usernames = authUsername.addUsername(usernames, "john_doe");
   usernames = authUsername.addUsername(usernames, "jane_doe");
