@@ -58,12 +58,27 @@ class Back4AppService {
 
     print("Messages: $messages");
 
-    var messagesDto = messages.map((e) => MessageDto.fromJson(e)).toList();
+    var messagesDto = <MessageDto>[];
+
+    print(messagesDto);
+
+    for (var message in messages) {
+      // Garantir que a mensagem seja do tipo Map<String, dynamic>
+      if (message is Map<String, dynamic>) {
+        //necessário conferir se cada item da list dinamica é um mapa, se for, ele pode ser convertido
+        //no tipo da nossa classe, porém no dart tem que fazer item por item da lista
+        messagesDto.add(MessageDto.fromJson(Map<String, dynamic>.from(message)));
+        print("Converte");
+      } else {
+        print("Mensagem inválida: $message");
+      }
+    }
 
     print("MessagesDto: $messagesDto");
+    print(messagesDto.runtimeType);
 
     print('Getting messages from chat');
 
-    return messagesDto; // E/flutter (  742): [ERROR:flutter/runtime/dart_vm_initializer.cc(40)] Unhandled Exception: type 'List<dynamic>' is not a subtype of type 'List<MessageDto>' in type cast
+    return messagesDto;
   }
 }
