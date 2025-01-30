@@ -10,9 +10,9 @@ void main() async {
 
   await service.init();
 
-  await service.getMessagesFromChat();
+  //await service.getMessagesFromChat();
 
-  print('Messages from local storage: ${await service.getMessagesFromChat()}');
+  //print('Messages from local storage: ${await service.getMessagesFromChat()}');
 
   runApp(const MyApp());
 }
