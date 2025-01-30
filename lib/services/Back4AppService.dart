@@ -72,6 +72,7 @@ class Back4AppService {
   }
 
   List<MessageDto> getMessagesFromLocalStorage() {
+    getMessagesFromChatAndSetToLocalStorage();
     deleteMessagesOlderThanXHours();
     final messagesJson = localStorage.getItem('messages') ?? '[]';
     return MessageDto.fromJsonArrayString(messagesJson);
