@@ -1,5 +1,4 @@
 import 'package:app/dtos/Message.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class Back4AppService {
@@ -57,9 +56,9 @@ class Back4AppService {
     return saveResponse.success;
   }
 
-  Future<void> getMessagesFromChatAndSetToLocalStorage() async {
+  Future<List<MessageDto>?> getMessagesFromChat() async {
     final chat = await getOrCreateChat();
-    if (chat == null) return;
+    if (chat == null) throw Exception('Chat not found');
 
     final query = QueryBuilder<ParseObject>(ParseObject('Message'))
       ..whereEqualTo('chat_id', chat.toPointer())
@@ -76,30 +75,9 @@ class Back4AppService {
         );
       }).toList();
 
-      localStorage.setItem('messages', MessageDto.toJsonArrayString(messages));
+      return messages;
     }
-  }
 
-  List<MessageDto> getMessagesFromLocalStorage() {
-    getMessagesFromChatAndSetToLocalStorage();
-    deleteMessagesOlderThanXHours();
-    final messagesJson = localStorage.getItem('messages') ?? '[]';
-    return MessageDto.fromJsonArrayString(messagesJson);
-  }
-
-  Future<void> deleteMessagesOlderThanXHours() async {
-    final messagesJson = localStorage.getItem('messages') ?? '[]';
-    final messagesDto = MessageDto.fromJsonArrayString(messagesJson);
-
-    final now = DateTime.now();
-
-    final filteredMessages = messagesDto.where((message) {
-      final difference = now.difference(message.createdAt);
-      return difference.inHours <= hoursExpiration;
-    }).toList();
-
-    localStorage.setItem('messages', MessageDto.toJsonArrayString(filteredMessages));
-
-    print('Deleted messages older than 3 hours. Remaining messages: ${filteredMessages.length}');
+    return null;
   }
 }

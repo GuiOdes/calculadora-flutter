@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class MessageDto {
   final String content;
   final String userName;
@@ -17,7 +19,7 @@ class MessageDto {
   Map<String, dynamic> toJson() {
     return {
       'content': content,
-      'userName': userName,
+      'username': userName,
       'createdAt': createdAt
     };
   }
@@ -26,8 +28,9 @@ class MessageDto {
     return messages.map((e) => e.toJson()).toList().toString();
   }
 
-  static List<MessageDto> fromJsonArrayString(String json) {
-    return json.split(',').map((e) => MessageDto.fromJson(e as Map<String, dynamic>)).toList();
+  static List<MessageDto> fromJsonArrayString(String jsonString) {
+    final List<dynamic> jsonList = jsonDecode(jsonString);
+    return jsonList.map((json) => MessageDto.fromJson(json)).toList();
   }
 
   @override
