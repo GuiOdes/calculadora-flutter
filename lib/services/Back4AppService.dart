@@ -56,12 +56,17 @@ class Back4AppService {
     return saveResponse.success;
   }
 
-  Future<List<MessageDto>?> getMessagesFromChat() async {
+  Future<List<MessageDto>?> getMessagesFromChat(int pageSize, int page) async {
     final chat = await getOrCreateChat();
     if (chat == null) throw Exception('Chat not found');
 
+    var offset = pageSize * page;
+    var limit = pageSize;
+
     final query = QueryBuilder<ParseObject>(ParseObject('Message'))
       ..whereEqualTo('chat_id', chat.toPointer())
+      ..setLimit(limit)
+      ..setAmountToSkip(offset)
       ..orderByDescending('createdAt');
 
     final response = await query.query();
