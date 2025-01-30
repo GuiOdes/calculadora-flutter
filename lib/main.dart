@@ -1,23 +1,24 @@
 import 'package:app/pages/ChatPage.dart';
-import 'package:app/ThemeData.dart';
 import 'package:app/pages/HomePage.dart';
 import 'package:app/services/Back4AppService.dart';
 import 'package:flutter/material.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
-import 'components/MyAppBar.dart';
+import 'package:localstorage/localstorage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initLocalStorage();
 
   Back4AppService service = Back4AppService();
 
   await service.init();
 
-  var chat = await service.getOrCreateChat();
+  // service.addMessageToChat(
+  //   MessageDto("content", "userName", DateTime.now())
+  // );
 
-  print(chat.result);
+  service.getMessagesFromChatAndSetToLocalStorage();
 
-  print(await service.getMessagesFromChat());
+  print('Messages from local storage: ${localStorage.getItem('messages')}');
 
   runApp(const MyApp());
 }

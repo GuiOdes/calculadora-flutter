@@ -1,7 +1,11 @@
 import 'package:app/dtos/Message.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class Back4AppService {
+  int messageId = 1;
+  int hoursExpiration = 3;
+
   Future<void> init() async {
     await _connectParse();
     print("Connected to Parse");
@@ -21,61 +25,71 @@ class Back4AppService {
     );
   }
 
-  Future<ParseResponse> getOrCreateChat() async {
-    var query = QueryBuilder<ParseObject>(ParseObject('Chat'))..setLimit(1);
-    var chat = await query.query();
+  Future<ParseObject?> getOrCreateChat() async {
+    final query = QueryBuilder<ParseObject>(ParseObject('Chat'))..setLimit(1);
+    final response = await query.query();
 
-    if (chat.success && chat.results != null && chat.results!.isNotEmpty) {
+    if (response.success && response.results != null && response.results!.isNotEmpty) {
       print('Chat found');
-      return chat;
+      return response.results!.first;
     }
 
     print('Chat not found, creating new chat');
-    var newChat = ParseObject('Chat');
-
-    return newChat.save();
+    final newChat = ParseObject('Chat');
+    final saveResponse = await newChat.save();
+    return saveResponse.success ? newChat : null;
   }
 
-  Future<ParseResponse> addMessageToChat(String message, String userName) async {
-    final query = QueryBuilder<ParseObject>(ParseObject('Chat'));
-    final response = await query.query();
-    var messages = response.results!.first.get<List<dynamic>>('messages') ?? [];
-    var messagesDto = messages.map((e) => MessageDto.fromJson(e)).toList();
-    var newMessage = MessageDto(message, userName);
+  Future<bool> addMessageToChat(MessageDto message) async {
+    final chat = await getOrCreateChat();
+    if (chat == null) return false;
 
-    messagesDto.add(newMessage);
+    final messages = chat.get<List<dynamic>>('messages') ?? [];
+    final messagesDto = messages.map((e) => MessageDto.fromJson(e)).toList();
 
-    response.results!.first.set('messages', messagesDto.map((e) => e.toJson()).toList());
+    message.id = messageId++;
+    messagesDto.add(message);
 
-    print('Adding message to chat');
-    return response.results!.first.save();
+    chat.set('messages', messagesDto.map((e) => e.toJson()).toList());
+    final saveResponse = await chat.save();
+
+    print(saveResponse.success ? 'Message added to chat' : 'Failed to add message');
+    return saveResponse.success;
   }
 
-  Future<List<MessageDto>> getMessagesFromChat() async {
-    final query = QueryBuilder<ParseObject>(ParseObject('Chat'));
-    final response = await query.query();
-    var messages = response.results!.first.get<dynamic>('messages') ?? [];
+  Future<void> getMessagesFromChatAndSetToLocalStorage() async {
+    final chat = await getOrCreateChat();
+    if (chat == null) return;
 
-    print("Messages: $messages");
+    final messages = chat.get<List<dynamic>>('messages') ?? [];
+    final messagesDto = messages
+        .whereType<Map<String, dynamic>>()
+        .map((e) => MessageDto.fromJson(e))
+        .toList();
 
-    var messagesDto = <MessageDto>[];
+    print('Fetched ${messagesDto.length} messages from chat');
+    localStorage.setItem('messages', MessageDto.toJsonArrayString(messagesDto));
+  }
 
-    print(messagesDto);
+  List<MessageDto> getMessagesFromLocalStorage() {
+    deleteMessagesOlderThanXHours();
+    final messagesJson = localStorage.getItem('messages') ?? '[]';
+    return MessageDto.fromJsonArrayString(messagesJson);
+  }
 
-    for (var message in messages) {
-      if (message is Map<String, dynamic>) {
-        messagesDto.add(MessageDto.fromJson(Map<String, dynamic>.from(message)));
-        print("Converte");
-      } else {
-        print("Mensagem inválida: $message");
-      }
-    }
+  Future<void> deleteMessagesOlderThanXHours() async {
+    final messagesJson = localStorage.getItem('messages') ?? '[]';
+    final messagesDto = MessageDto.fromJsonArrayString(messagesJson);
 
-    print("MessagesDto: $messagesDto");
-    print(messagesDto.runtimeType);
+    final now = DateTime.now();
 
-    print('Getting messages from chat');
+    final filteredMessages = messagesDto.where((message) {
+      final difference = now.difference(message.createdAt);
+      return difference.inHours <= hoursExpiration;
+    }).toList();
 
-    return messagesDto;
+    localStorage.setItem('messages', MessageDto.toJsonArrayString(filteredMessages));
+
+    print('Deleted messages older than 3 hours. Remaining messages: ${filteredMessages.length}');
   }
 }
