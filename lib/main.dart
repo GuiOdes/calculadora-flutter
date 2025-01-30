@@ -12,11 +12,7 @@ void main() async {
 
   await service.init();
 
-  // service.addMessageToChat(
-  //   MessageDto("content", "userName", DateTime.now())
-  // );
-
-  service.getMessagesFromChatAndSetToLocalStorage();
+  await service.getMessagesFromChatAndSetToLocalStorage();
 
   print('Messages from local storage: ${localStorage.getItem('messages')}');
 

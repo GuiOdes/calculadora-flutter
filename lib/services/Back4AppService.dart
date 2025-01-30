@@ -44,16 +44,16 @@ class Back4AppService {
     final chat = await getOrCreateChat();
     if (chat == null) return false;
 
-    final messages = chat.get<List<dynamic>>('messages') ?? [];
-    final messagesDto = messages.map((e) => MessageDto.fromJson(e)).toList();
+    var msgToSave = ParseObject('Message')
+        ..set('content', message.content)
+        ..set('username', message.userName)
+        ..set('createdAt', message.createdAt)
+        ..set('chat_id', chat.toPointer());
 
-    message.id = messageId++;
-    messagesDto.add(message);
-
-    chat.set('messages', messagesDto.map((e) => e.toJson()).toList());
-    final saveResponse = await chat.save();
+    var saveResponse = await msgToSave.save();
 
     print(saveResponse.success ? 'Message added to chat' : 'Failed to add message');
+
     return saveResponse.success;
   }
 
@@ -61,14 +61,23 @@ class Back4AppService {
     final chat = await getOrCreateChat();
     if (chat == null) return;
 
-    final messages = chat.get<List<dynamic>>('messages') ?? [];
-    final messagesDto = messages
-        .whereType<Map<String, dynamic>>()
-        .map((e) => MessageDto.fromJson(e))
-        .toList();
+    final query = QueryBuilder<ParseObject>(ParseObject('Message'))
+      ..whereEqualTo('chat_id', chat.toPointer())
+      ..orderByDescending('createdAt');
 
-    print('Fetched ${messagesDto.length} messages from chat');
-    localStorage.setItem('messages', MessageDto.toJsonArrayString(messagesDto));
+    final response = await query.query();
+
+    if (response.success && response.results != null) {
+      final messages = response.results!.map((message) {
+        return MessageDto(
+          message.get<String>('content') ?? '',
+          message.get<String>('username') ?? '',
+          message.get<DateTime>('createdAt') ?? DateTime.now(),
+        );
+      }).toList();
+
+      localStorage.setItem('messages', MessageDto.toJsonArrayString(messages));
+    }
   }
 
   List<MessageDto> getMessagesFromLocalStorage() {
