@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:localstorage/localstorage.dart';
 
 import '../ThemeData.dart';
 
@@ -33,6 +34,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
               size: 50,
             ),
             onPressed: () {
+              localStorage.removeItem('username');
               Navigator.pushNamed(context, '/');
             },
           ),
