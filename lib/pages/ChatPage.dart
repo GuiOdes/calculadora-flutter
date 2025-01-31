@@ -20,13 +20,74 @@ class _ChatPageState extends State<ChatPage> {
   final _formKey = GlobalKey<FormState>();
   var service = Back4AppService();
 
+  // Listagem de mensagens
+  List<MessageDto> messages = [];
+  int page = 0;
+  bool isLoading = false;
+  bool hasMore = true;
+  ScrollController _scrollController = ScrollController();
+  Back4AppService back4AppService = Back4AppService();
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeBack4App();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _initializeBack4App() async {
+    await back4AppService.init();
+    _loadMessages(initialLoad: true);
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels < _scrollController.position.minScrollExtent - 50 && !isLoading && hasMore) {
+      _loadMessages();
+    }
+  }
+
+  Future<void> _loadMessages({bool initialLoad = false}) async {
+    if (isLoading || !hasMore) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    final newMessages = await back4AppService.getMessagesFromChat(12, page);
+
+    setState(() {
+      if (newMessages != null && newMessages.isNotEmpty) {
+        messages.insertAll(initialLoad ? page * 12 : 0, newMessages);
+        page++;
+      } else {
+        hasMore = false;
+      }
+      isLoading = false;
+    });
+  }
+
   void onSendMessage(String message) {
-    service.addMessageToChat(
-      MessageDto(message, localStorage.getItem('username')!, DateTime.now())
+    if (message.trim().isEmpty) return;
+
+    final newMessage = MessageDto(
+      message,
+      localStorage.getItem('username')!,
+      DateTime.now(),
     );
 
-    messageController.clear();
+    service.addMessageToChat(newMessage);
 
+    setState(() {
+      messages.insert(0, newMessage);
+    });
+
+    messageController.clear();
     FocusScope.of(context).unfocus();
   }
 
@@ -43,22 +104,25 @@ class _ChatPageState extends State<ChatPage> {
         child: Center(
           child: Column(
             children: [
-              // list view of messages
               Expanded(
-                child: ListView(
-                  children: [
-                    // ChatBubbleListTile(message: "Olá", isSentByMe: true, time: "10:19",),
-                    // ChatBubbleListTile(message: "Eae", isSentByMe: false, userName: "Pedrinho", time: "10,19",),
-                    // ChatBubbleListTile(message: "Tudo bem?", isSentByMe: true, time: "10:19",),
-                    // ChatBubbleListTile(message: "Tudo sim e você?", isSentByMe: false, userName: "Pedrinho", time: "10:19",),
-                    // ChatBubbleListTile(message: "Tudo bem também", isSentByMe: true, time: "10:19",),
-                    // ChatBubbleListTile(message: "Que bom", isSentByMe: false, userName: "Pedrinho", time: "10:19",),
-                    // ChatBubbleListTile(message: "Vamos sair hoje?", isSentByMe: true, time: "10:19",),
-                    // ChatBubbleListTile(message: "Vamos sim", isSentByMe: false, userName: "Pedrinho", time: "10:19",),
-                    // ChatBubbleListTile(message: "Que horas?", isSentByMe: true, time: "10:19",),
-                    // ChatBubbleListTile(message: "Às 20h", isSentByMe: false, userName: "Pedrinho", time: "10:19",),
-                    // ChatBubbleListTile(message: "Ok", isSentByMe: true, time: "10:19",),
-                  ],
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    await _loadMessages(initialLoad: true);
+                  },
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    reverse: true,
+                    itemCount: messages.length,
+                    itemBuilder: (context, index) {
+                      final message = messages[index];
+                      return ChatBubbleListTile(
+                        message: message.content,
+                        isSentByMe: message.userName == localStorage.getItem('username'),
+                        userName: message.userName,
+                        time: '${message.createdAt.hour}:${message.createdAt.minute}',
+                      );
+                    },
+                  ),
                 ),
               ),
               SizedBox(height: 5),

@@ -36,9 +36,6 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.15,
-                  ),
                   Image(
                     image: AssetImage('lib/images/logo.png'),
                     height: MediaQuery.of(context).size.height * 0.1,
@@ -47,6 +44,7 @@ class _HomePageState extends State<HomePage> {
                     image: AssetImage('lib/images/name.png'),
                     height: MediaQuery.of(context).size.height * 0.1,
                   ),
+
                   SizedBox(height: MediaQuery.of(context).size.height * 0.1),
                   CustomTextField(
                     label: "Nome de Usuário",
