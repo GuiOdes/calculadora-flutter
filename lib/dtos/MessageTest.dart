@@ -1,5 +1,7 @@
+import 'package:app/dtos/Message.dart';
+import 'package:app/services/Back4AppService.dart';
 import 'package:flutter/material.dart';
-
+Back4AppService service = Back4AppService();
 void main() {
   runApp(MyApp());
 }
@@ -28,16 +30,18 @@ class _ChatMockScreenState extends State<ChatMockScreen> {
   final int _messagesPerPage = 15;
   bool _isLoading = false;
 
+
+
   // Função para gerar mensagens mockadas
-  List<Map<String, String>> _generateMockMessages(int startIndex, int count) {
-    return List.generate(count, (index) {
-      final messageId = startIndex + index + 1;
-      return {
-        'id': messageId.toString(),
-        'text': 'Mensagem $messageId',
-        'timestamp': '2023-10-01T12:00:00Z',
-      };
-    });
+  Future<List<Map<String, String>>> _generateMockMessages(MessageDto message) async {
+    if(await service.addMessageToChat(message)){
+      return [
+        {
+          'text': message.content,
+          'timestamp': message.createdAt.toString(),
+        },
+      ];
+    }
   }
 
   // Função para carregar mais mensagens
@@ -50,8 +54,8 @@ class _ChatMockScreenState extends State<ChatMockScreen> {
 
     // Simula um delay de 1 segundo para carregar dados
     await Future.delayed(Duration(seconds: 1));
-
-    final newMessages = _generateMockMessages(_currentIndex, _messagesPerPage);
+    List<MessageDto> listMessages = await service.getMessagesFromLocalStorage();
+    final newMessages = service.addMessageToChat(MessageDto('Olá Mundo', 'gustavo', '10:00'));
 
     setState(() {
       _messages.insertAll(0, newMessages);
