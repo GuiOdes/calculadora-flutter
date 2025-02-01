@@ -6,7 +6,8 @@ class CustomTextField extends StatelessWidget {
   final IconData? suffixIcon;
   final IconData? prefixIcon;
   final TextEditingController controller;
-  
+  final String? Function(String?)? validator; // Adicione este parâmetro
+  final VoidCallback? onSuffixIconPressed; // Adicione este parâmetro
 
   const CustomTextField({
     super.key,
@@ -14,19 +15,22 @@ class CustomTextField extends StatelessWidget {
     required this.controller,
     this.suffixIcon,
     this.prefixIcon,
+    this.validator, // Adicione este parâmetro
+    this.onSuffixIconPressed, // Adicione este parâmetro
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: controller,
       cursorColor: darkMode.btnTextColor,
       style: TextStyle(
-          color: darkMode.btnTextColor,
+        color: darkMode.btnTextColor,
       ),
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(
-          color: darkMode.btnTextColor
+          color: darkMode.btnTextColor,
         ),
         border: OutlineInputBorder(
           borderSide: BorderSide(
@@ -39,16 +43,17 @@ class CustomTextField extends StatelessWidget {
             color: darkMode.btnTextColor,
           ),
         ),
-        // icon if exists in suffix
-        suffixIcon: suffixIcon != null ? Icon(
-          suffixIcon,
-          color: darkMode.btnTextColor,
-        ) : null,
-        prefixIcon: prefixIcon != null ? Icon(
-          prefixIcon,
-          color: darkMode.btnTextColor,
-        ) : null,
+        suffixIcon: suffixIcon != null
+            ? IconButton(
+          icon: Icon(suffixIcon, color: darkMode.btnTextColor),
+          onPressed: onSuffixIconPressed,
+        )
+            : null,
+        prefixIcon: prefixIcon != null
+            ? Icon(prefixIcon, color: darkMode.btnTextColor)
+            : null,
       ),
+      validator: validator, // Use o parâmetro aqui
     );
   }
 }

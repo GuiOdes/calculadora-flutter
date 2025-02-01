@@ -2,6 +2,9 @@ import 'package:app/dtos/Message.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class Back4AppService {
+  int messageId = 1;
+  int hoursExpiration = 3;
+
   Future<void> init() async {
     await _connectParse();
     print("Connected to Parse");
@@ -21,63 +24,65 @@ class Back4AppService {
     );
   }
 
-  Future<ParseResponse> getOrCreateChat() async {
-    var query = QueryBuilder<ParseObject>(ParseObject('Chat'))..setLimit(1);
-    var chat = await query.query();
+  Future<ParseObject?> getOrCreateChat() async {
+    final query = QueryBuilder<ParseObject>(ParseObject('Chat'))..setLimit(1);
+    final response = await query.query();
 
-    if (chat.success && chat.results != null && chat.results!.isNotEmpty) {
+    if (response.success && response.results != null && response.results!.isNotEmpty) {
       print('Chat found');
-      return chat;
+      return response.results!.first;
     }
 
     print('Chat not found, creating new chat');
-    var newChat = ParseObject('Chat');
-
-    return newChat.save();
+    final newChat = ParseObject('Chat');
+    final saveResponse = await newChat.save();
+    return saveResponse.success ? newChat : null;
   }
 
-  Future<ParseResponse> addMessageToChat(String message, String userName) async {
-    final query = QueryBuilder<ParseObject>(ParseObject('Chat'));
-    final response = await query.query();
-    var messages = response.results!.first.get<List<dynamic>>('messages') ?? [];
-    var messagesDto = messages.map((e) => MessageDto.fromJson(e)).toList();
-    var newMessage = MessageDto(message, userName);
+  Future<bool> addMessageToChat(MessageDto message) async {
+    final chat = await getOrCreateChat();
+    if (chat == null) return false;
 
-    messagesDto.add(newMessage);
+    var msgToSave = ParseObject('Message')
+        ..set('content', message.content)
+        ..set('username', message.userName)
+        ..set('createdAt', message.createdAt)
+        ..set('chat_id', chat.toPointer());
 
-    response.results!.first.set('messages', messagesDto.map((e) => e.toJson()).toList());
+    var saveResponse = await msgToSave.save();
 
-    print('Adding message to chat');
-    return response.results!.first.save();
+    print(saveResponse.success ? 'Message added to chat' : 'Failed to add message');
+
+    return saveResponse.success;
   }
 
-  Future<List<MessageDto>> getMessagesFromChat() async {
-    final query = QueryBuilder<ParseObject>(ParseObject('Chat'));
+  Future<List<MessageDto>?> getMessagesFromChat(int pageSize, int page) async {
+    final chat = await getOrCreateChat();
+    if (chat == null) throw Exception('Chat not found');
+
+    var offset = pageSize * page;
+    var limit = pageSize;
+
+    final query = QueryBuilder<ParseObject>(ParseObject('Message'))
+      ..whereEqualTo('chat_id', chat.toPointer())
+      ..setLimit(limit)
+      ..setAmountToSkip(offset)
+      ..orderByDescending('createdAt');
+
     final response = await query.query();
-    var messages = response.results!.first.get<dynamic>('messages') ?? [];
 
-    print("Messages: $messages");
+    if (response.success && response.results != null) {
+      final messages = response.results!.map((message) {
+        return MessageDto(
+          message.get<String>('content') ?? '',
+          message.get<String>('username') ?? '',
+          message.get<DateTime>('createdAt') ?? DateTime.now(),
+        );
+      }).toList();
 
-    var messagesDto = <MessageDto>[];
-
-    print(messagesDto);
-
-    for (var message in messages) {
-      if (message is Map<String, dynamic>) {
-        messagesDto.add(MessageDto.fromJson(Map<String, dynamic>.from(message)));
-        print("Converte");
-      } else {
-        print("Mensagem inválida: $message");
-      }
+      return messages;
     }
 
-    print("MessagesDto: $messagesDto");
-    print(messagesDto.runtimeType);
-
-    print('Getting messages from chat');
-
-    return messagesDto;
+    return null;
   }
-
-  Future<List<ParseObject>>
 }

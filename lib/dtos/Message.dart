@@ -1,15 +1,15 @@
+import 'dart:convert';
+
 class MessageDto {
-  int? id;
   final String content;
   final String userName;
   final DateTime createdAt;
 
   MessageDto(this.content, this.userName, this.createdAt);
-  MessageDto.withId(this.id, this.content, this.userName, this.createdAt);
+  MessageDto.withId(this.content, this.userName, this.createdAt);
 
   factory MessageDto.fromJson(Map<String, dynamic> json) {
-    return MessageDto.withId(
-      json['id'],
+    return MessageDto(
       json['content'],
       json['userName'],
       DateTime.parse(json['createdAt']['iso'])
@@ -18,9 +18,8 @@ class MessageDto {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'content': content,
-      'userName': userName,
+      'username': userName,
       'createdAt': createdAt
     };
   }
@@ -29,12 +28,13 @@ class MessageDto {
     return messages.map((e) => e.toJson()).toList().toString();
   }
 
-  static List<MessageDto> fromJsonArrayString(String json) {
-    return json.split(',').map((e) => MessageDto.fromJson(e as Map<String, dynamic>)).toList();
+  static List<MessageDto> fromJsonArrayString(String jsonString) {
+    final List<dynamic> jsonList = jsonDecode(jsonString);
+    return jsonList.map((json) => MessageDto.fromJson(json)).toList();
   }
 
   @override
   String toString() {
-    return 'MessageDto{ id: $id, content: $content, userName: $userName , createdAt: $createdAt }';
+    return 'MessageDto{ content: $content, userName: $userName , createdAt: $createdAt }';
   }
 }

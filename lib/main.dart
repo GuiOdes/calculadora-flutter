@@ -6,19 +6,12 @@ import 'package:localstorage/localstorage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initLocalStorage();
+
+  initLocalStorage();
 
   Back4AppService service = Back4AppService();
 
   await service.init();
-
-  // service.addMessageToChat(
-  //   MessageDto("content", "userName", DateTime.now())
-  // );
-
-  service.getMessagesFromChatAndSetToLocalStorage();
-
-  print('Messages from local storage: ${localStorage.getItem('messages')}');
 
   runApp(const MyApp());
 }
