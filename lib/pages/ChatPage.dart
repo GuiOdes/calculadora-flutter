@@ -64,7 +64,8 @@ class _ChatPageState extends State<ChatPage> {
     setState(() {
       if (newMessages != null && newMessages.isNotEmpty) {
         for (var message in newMessages) {
-          message.createdAt = message.createdAt.toLocal();
+          // Interpreta o horário como UTC e converte para o fuso horário local
+          message.createdAt = DateTime.parse(message.createdAt.toIso8601String() + 'Z').toLocal();
         }
         messages.insertAll(initialLoad ? page * 12 : 0, newMessages);
         page++;
