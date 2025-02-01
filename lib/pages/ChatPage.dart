@@ -63,10 +63,6 @@ class _ChatPageState extends State<ChatPage> {
 
     setState(() {
       if (newMessages != null && newMessages.isNotEmpty) {
-        for (var message in newMessages) {
-          // Interpreta o horário como UTC e converte para o fuso horário local
-          message.createdAt = DateTime.parse(message.createdAt.toIso8601String() + 'Z').toLocal();
-        }
         messages.insertAll(initialLoad ? page * 12 : 0, newMessages);
         page++;
       } else {
@@ -74,6 +70,26 @@ class _ChatPageState extends State<ChatPage> {
       }
       isLoading = false;
     });
+  }
+  DateTime  _adjustTimeForTimezone(DateTime date) {
+    DateTime now = DateTime.now();
+    DateTime utcNow = DateTime.now().toUtc();
+
+    final offset = now.difference(utcNow).inHours;
+    DateTime adjustedTime = date.add(Duration(hours: offset));
+
+    // Se o horário ultrapassar 23:59, ajusta o dia
+    if (adjustedTime.hour >= 24) {
+      adjustedTime = adjustedTime.subtract(Duration(hours: 24));
+      adjustedTime = adjustedTime.add(Duration(days: 1));
+    }
+    // Se o horário for menor que 00:00, ajusta o dia
+    else if (adjustedTime.hour < 0) {
+      adjustedTime = adjustedTime.add(Duration(hours: 24));
+      adjustedTime = adjustedTime.subtract(Duration(days: 1));
+    }
+
+    return adjustedTime;
   }
 
   void onSendMessage(String message) {
@@ -119,11 +135,12 @@ class _ChatPageState extends State<ChatPage> {
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
                       final message = messages[index];
+                      final adjustedTime = _adjustTimeForTimezone(message.createdAt);
                       return ChatBubbleListTile(
                         message: message.content,
                         isSentByMe: message.userName == localStorage.getItem('username'),
                         userName: message.userName,
-                        time: '${message.createdAt.hour}:${message.createdAt.minute.toString().padLeft(2, '0')}',
+                        time: '${adjustedTime.toString().padLeft(2, '0')}:${adjustedTime.minute.toString().padLeft(2, '0')}',
                       );
                     },
                   ),
