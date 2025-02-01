@@ -78,9 +78,7 @@ class _ChatPageState extends State<ChatPage> {
     final newMessage = MessageDto(
       message,
       localStorage.getItem('username')!,
-      // Subtrair 3 horas para corrigir o fuso horário,
-      // pois o servidor está em UTC
-      DateTime.now().subtract(Duration(hours: 3)),
+      DateTime.now(),
     );
 
     service.addMessageToChat(newMessage);
@@ -121,7 +119,8 @@ class _ChatPageState extends State<ChatPage> {
                         message: message.content,
                         isSentByMe: message.userName == localStorage.getItem('username'),
                         userName: message.userName,
-                        time: '${message.createdAt.hour}:${message.createdAt.minute}',
+                        //horario com correção de fuso horário -3 horas
+                        time: '${message.createdAt.hour - 3}:${message.createdAt.minute}',
                       );
                     },
                   ),
