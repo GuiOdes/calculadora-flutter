@@ -62,18 +62,10 @@ class _ChatPageState extends State<ChatPage> {
     final newMessages = await back4AppService.getMessagesFromChat(12, page);
 
     setState(() {
-      if(newMessages != null && newMessages.isNotEmpty){
-        if(initialLoad) {
-          messages.clear();
-          messages.addAll(newMessages);
-          page = 1;
-        }
-        else{
-          messages.addAll(newMessages);
-          page++;
-        }
-      }
-      else{
+      if (newMessages != null && newMessages.isNotEmpty) {
+        messages.insertAll(initialLoad ? page * 12 : 0, newMessages);
+        page++;
+      } else {
         hasMore = false;
       }
       isLoading = false;
@@ -86,7 +78,9 @@ class _ChatPageState extends State<ChatPage> {
     final newMessage = MessageDto(
       message,
       localStorage.getItem('username')!,
-      DateTime.now(),
+      // Subtrair 3 horas para corrigir o fuso horário,
+      // pois o servidor está em UTC
+      DateTime.now().subtract(Duration(hours: 3)),
     );
 
     service.addMessageToChat(newMessage);
