@@ -76,7 +76,8 @@ class _ChatPageState extends State<ChatPage> {
     DateTime utcNow = DateTime.now().toUtc();
 
     final offset = now.difference(utcNow).inHours;
-    DateTime adjustedTime = date.add(Duration(hours: offset));
+
+    DateTime adjustedTime = date.subtract( Duration(hours: offset) );
 
     // Se o horário ultrapassar 23:59, ajusta o dia
     if (adjustedTime.hour >= 24) {
@@ -140,7 +141,7 @@ class _ChatPageState extends State<ChatPage> {
                         message: message.content,
                         isSentByMe: message.userName == localStorage.getItem('username'),
                         userName: message.userName,
-                        time: '${adjustedTime.toString().padLeft(2, '0')}:${adjustedTime.minute.toString().padLeft(2, '0')}',
+                        time: '${adjustedTime.hour.toString().padLeft(2, '0')}:${adjustedTime.minute.toString().padLeft(2, '0')}',
                       );
                     },
                   ),
