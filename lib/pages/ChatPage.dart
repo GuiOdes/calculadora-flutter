@@ -63,6 +63,9 @@ class _ChatPageState extends State<ChatPage> {
 
     setState(() {
       if (newMessages != null && newMessages.isNotEmpty) {
+        for (var message in newMessages) {
+          message.createdAt = message.createdAt.toLocal();
+        }
         messages.insertAll(initialLoad ? page * 12 : 0, newMessages);
         page++;
       } else {
@@ -119,8 +122,7 @@ class _ChatPageState extends State<ChatPage> {
                         message: message.content,
                         isSentByMe: message.userName == localStorage.getItem('username'),
                         userName: message.userName,
-                        //horario com correção de fuso horário -3 horas
-                        time: '${message.createdAt.hour - 3}:${message.createdAt.minute}',
+                        time: '${message.createdAt.hour}:${message.createdAt.minute.toString().padLeft(2, '0')}',
                       );
                     },
                   ),

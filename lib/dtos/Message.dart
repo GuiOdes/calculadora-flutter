@@ -3,7 +3,7 @@ import 'dart:convert';
 class MessageDto {
   final String content;
   final String userName;
-  final DateTime createdAt;
+  late final DateTime createdAt;
 
   MessageDto(this.content, this.userName, this.createdAt);
   MessageDto.withId(this.content, this.userName, this.createdAt);
